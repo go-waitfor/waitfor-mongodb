@@ -34,11 +34,13 @@ func New(u *url.URL) (waitfor.Resource, error) {
 }
 
 func (m *Mongo) Test(ctx context.Context) error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(m.uri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(m.uri))
 
 	if err != nil {
 		return err
 	}
+
+	defer client.Disconnect(ctx)
 
 	return client.Ping(ctx, readpref.Primary())
 }
